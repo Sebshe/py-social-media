@@ -1,9 +1,9 @@
-from typing import Any, Type
+from typing import Any
 
 from django.db.models import QuerySet
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -57,9 +57,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(
         self,
-    ) -> Type[
-        ProfileDetailSerializer | ProfileCreateUpdateSerializer | ProfileSerializer
-    ]:
+    ) -> serializers.Serializer:
         if self.action == "retrieve":
             return ProfileDetailSerializer
 
@@ -117,7 +115,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(
         self,
-    ) -> Type[PostSerializer | PostCreateUpdateSerializer | PostSerializer]:
+    ) -> serializers.Serializer:
         if self.action == "retrieve":
             return PostSerializer
 

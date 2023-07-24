@@ -6,7 +6,11 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from social_media_app.models import Profile, Post
-from social_media_app.serializers import ProfileSerializer, ProfileDetailSerializer, PostSerializer
+from social_media_app.serializers import (
+    ProfileSerializer,
+    ProfileDetailSerializer,
+    PostSerializer,
+)
 
 PROFILE_URL = reverse("social:profile-list")
 POST_URL = reverse("social:post-list")
@@ -26,7 +30,6 @@ def sample_profile(**params):
 
 def sample_post(**params):
     defaults = {
-        "author": "",
         "profile": "",
         "title": "firstname",
         "content": "lastname",
@@ -150,7 +153,6 @@ class ProfileTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_update_another_profile_forbidden(self):
-
         user = get_user_model().objects.create_user(
             "test1@test.com",
             "testpass1",
@@ -188,8 +190,8 @@ class PostsTests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_list_posts(self):
-        sample_post(author=self.user, profile=self.profile)
-        sample_post(author=self.user, profile=self.profile)
+        sample_post(profile=self.profile)
+        sample_post(profile=self.profile)
         res = self.client.get(POST_URL)
 
         posts = Post.objects.order_by("-created_at")
@@ -199,9 +201,9 @@ class PostsTests(TestCase):
         self.assertEqual(res.data["results"], serializer.data)
 
     def test_filter_post_by_title(self):
-        post1 = sample_post(author=self.user, profile=self.profile, title="title1")
-        post2 = sample_post(author=self.user, profile=self.profile, title="title2")
-        post3 = sample_post(author=self.user, profile=self.profile, title="title3")
+        post1 = sample_post(profile=self.profile, title="title1")
+        post2 = sample_post(profile=self.profile, title="title2")
+        post3 = sample_post(profile=self.profile, title="title3")
 
         res = self.client.get(POST_URL, {"title": "title1"})
 
@@ -214,9 +216,9 @@ class PostsTests(TestCase):
         self.assertNotIn(serializer3.data, res.data["results"])
 
     def test_filter_post_by_hashtag(self):
-        post1 = sample_post(author=self.user, profile=self.profile, hashtag="hashtag1")
-        post2 = sample_post(author=self.user, profile=self.profile, hashtag="hashtag2")
-        post3 = sample_post(author=self.user, profile=self.profile, hashtag="hashtag3")
+        post1 = sample_post(profile=self.profile, hashtag="hashtag1")
+        post2 = sample_post(profile=self.profile, hashtag="hashtag2")
+        post3 = sample_post(profile=self.profile, hashtag="hashtag3")
 
         res = self.client.get(POST_URL, {"hashtag": "hashtag1"})
 
@@ -229,7 +231,7 @@ class PostsTests(TestCase):
         self.assertNotIn(serializer3.data, res.data["results"])
 
     def test_retrieve_post_detail(self):
-        post = sample_post(author=self.user, profile=self.profile)
+        post = sample_post(profile=self.profile)
 
         url = post_detail_url(post.id)
         res = self.client.get(url)
@@ -239,14 +241,13 @@ class PostsTests(TestCase):
         self.assertEqual(res.data, serializer.data)
 
     def test_update_another_post_forbidden(self):
-
         user = get_user_model().objects.create_user(
             "test1@test.com",
             "testpass1",
         )
 
         profile = sample_profile(user=user)
-        post = sample_post(author=user, profile=profile)
+        post = sample_post(profile=profile)
         payload = {
             "title": "another",
             "content": "another",
@@ -262,7 +263,7 @@ class PostsTests(TestCase):
             "testpass1",
         )
         profile = sample_profile(user=user)
-        post = sample_post(author=user, profile=profile)
+        post = sample_post(profile=profile)
         res = self.client.delete(post_detail_url(post.id))
 
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)

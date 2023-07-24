@@ -13,7 +13,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "full_name",
-            "avatar",
             "gender",
             "followers_count",
             "posts_count",
@@ -52,7 +51,6 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
             "posts",
             "first_name",
             "last_name",
-            "avatar",
             "biography",
             "gender",
             "following",
@@ -77,7 +75,6 @@ class ProfileCreateUpdateSerializer(serializers.ModelSerializer):
             "id",
             "first_name",
             "last_name",
-            "avatar",
             "gender",
             "following",
         )
@@ -93,7 +90,6 @@ class PostSerializer(serializers.ModelSerializer):
             "author",
             "title",
             "content",
-            "media_attachments",
             "hashtag",
             "created_at",
         )
@@ -111,7 +107,6 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
             "profile",
             "title",
             "content",
-            "media_attachments",
             "hashtag",
             "created_at",
         )
